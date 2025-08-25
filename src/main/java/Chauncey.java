@@ -1,22 +1,22 @@
 import java.util.Scanner;
 
 public class Chauncey {
-    private static String[] commands = new String[100];
-    private static int numOfCommands = 0;
+    private static Task[] tasks = new Task[100];
+    private static int numOfTask = 0;
 
     public static void printLine(){
         System.out.println("____________________________________________________________");
     }
 
-    public static void addCommand(String command){
-        commands[numOfCommands] = command;
-        numOfCommands++;
+    public static void addTask(String command){
+        tasks[numOfTask] = new Task(command);
+        numOfTask++;
         System.out.println("added: " + command);
     }
 
-    public static void listCommands(){
-        for (int i=1; i<=numOfCommands; i++){
-            System.out.println(i + ". " + commands[i-1]);
+    public static void listTasks(){
+        for (int i = 1; i<= numOfTask; i++){
+            System.out.println(i + ".[" + tasks[i-1].getStatusIcon() + "] " + tasks[i-1].getDescription());
         }
     }
 
@@ -34,10 +34,18 @@ public class Chauncey {
         while (!command.equals("bye")){
             printLine();
             if (command.equals("list")){
-                listCommands();
+                listTasks();
+            }
+            else if (command.startsWith("mark")){
+                int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+                tasks[taskNumber-1].markAsDone();
+            }
+            else if (command.startsWith("unmark")){
+                int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+                tasks[taskNumber-1].markAsUndone();
             }
             else{
-                addCommand(command);
+                addTask(command);
             }
             printLine();
             System.out.println();
