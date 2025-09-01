@@ -8,33 +8,72 @@ public class Chauncey {
         System.out.println("____________________________________________________________");
     }
 
-    public static void addTask(String command){
-        tasks[numOfTask] = new Task(command);
+    private static void addTask(){
+        System.out.print("What type of task do you want to add? todo/deadline/event?");
+        Scanner in = new Scanner(System.in);
+        String type = in.nextLine();
+        System.out.println("Please enter the task details (split details by '/'): ");
+        String task = in.nextLine();
+        switch (type) {
+        case "todo":
+            tasks[numOfTask] = new Todo(task);
+            break;
+        case "deadline":
+            String[] deadlineDetails = task.split("/");
+            String deadline = deadlineDetails[deadlineDetails.length-1].trim();
+            tasks[numOfTask] = new Deadline(deadlineDetails[0].trim(), deadline);
+            break;
+        case "event":
+            String[] eventDetails = task.split("/");
+            String startTime = eventDetails[eventDetails.length-2].trim();
+            String endTime = eventDetails[eventDetails.length-1].trim();
+            tasks[numOfTask] = new Event(eventDetails[0].trim(), startTime, endTime);
+            break;
+        default:
+            System.out.println("Invalid task type.");
+        }
         numOfTask++;
-        System.out.println("added: " + command);
+        System.out.println("Got it. I've added this task: ");
+        tasks[numOfTask-1].outputTaskDetails();
+        System.out.println("Now you have " + numOfTask + " tasks in the list.");
     }
 
-    public static void removeTask(int taskNumber) {
-        String command = tasks[taskNumber-1].getDescription();
+    private static void removeTask(String command) {
+        int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+        String taskDetails = tasks[taskNumber-1].getTaskDetails();
         for (int i=taskNumber-1; i<numOfTask-1; i++){
             tasks[i] = tasks[i+1];
         }
         numOfTask--;
-        System.out.println("removed: " + command);
+        System.out.println("removed: " + taskDetails);
     }
 
-    public static void listTasks(){
+    private static void listTasks(){
+        System.out.println("Here are the tasks in your list:");
         for (int i = 1; i<= numOfTask; i++){
-            System.out.println(i + ".[" + tasks[i-1].getStatusIcon() + "] " + tasks[i-1].getDescription());
+            System.out.print(i + ".");
+            tasks[i-1].outputTaskDetails();
         }
+    }
+
+    private static void markTask(String command) {
+        int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+        tasks[taskNumber-1].markAsDone();
+        System.out.println("Nice! I've marked this task as done:");
+        tasks[taskNumber-1].outputTaskDetails();
+    }
+
+    private static void unmarkTask(String command) {
+        int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+        tasks[taskNumber-1].markAsUndone();
+        System.out.println("OK, I've marked this task as not done yet:");
+        tasks[taskNumber-1].outputTaskDetails();
     }
 
     public static void main(String[] args) {
         // Add greetings.
         printLine();
-        System.out.println("Hello! I'm Chauncey.");
-        System.out.println("List of things I can do: add / remove / list / mark / unmark ");
-        System.out.println("What can I do for you?");
+        printWelcomeMessage();
         printLine();
         System.out.println();
 
@@ -43,29 +82,7 @@ public class Chauncey {
         String command = in.nextLine();
         while (!command.equals("bye")){
             printLine();
-            if (command.equals("list")){
-                listTasks();
-            }
-            else if (command.equals("add")) {
-                System.out.print("What task do you want to add? ");
-                String task = in.nextLine();
-                addTask(task);
-            }
-            else if (command.startsWith("remove")) {
-                int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
-                removeTask(taskNumber);
-            }
-            else if (command.startsWith("mark")){
-                int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
-                tasks[taskNumber-1].markAsDone();
-            }
-            else if (command.startsWith("unmark")){
-                int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
-                tasks[taskNumber-1].markAsUndone();
-            }
-            else{
-                System.out.println("Invalid command.");
-            }
+            executeCommand(command);
             printLine();
             System.out.println();
             command = in.nextLine();
@@ -75,5 +92,32 @@ public class Chauncey {
         printLine();
         System.out.println("Bye. Hope to see you again soon!");
         printLine();
+    }
+
+    private static void executeCommand(String command) {
+        if (command.equals("list")){
+            listTasks();
+        }
+        else if (command.equals("add")) {
+            addTask();
+        }
+        else if (command.startsWith("remove")) {
+            removeTask(command);
+        }
+        else if (command.startsWith("mark")){
+            markTask(command);
+        }
+        else if (command.startsWith("unmark")){
+            unmarkTask(command);
+        }
+        else{
+            System.out.println("Invalid command.");
+        }
+    }
+
+    private static void printWelcomeMessage() {
+        System.out.println("Hello! I'm Chauncey.");
+        System.out.println("List of things I can do: add / remove / list / mark / unmark ");
+        System.out.println("What can I do for you?");
     }
 }
