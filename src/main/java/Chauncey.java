@@ -4,11 +4,11 @@ public class Chauncey {
     private static Task[] tasks = new Task[100];
     private static int numOfTask = 0;
 
-    public static void printLine(){
+    public static void printLine() {
         System.out.println("____________________________________________________________");
     }
 
-    private static void addTask(){
+    private static void addTask() {
         System.out.print("What type of task do you want to add? todo/deadline/event?");
         Scanner in = new Scanner(System.in);
         String type = in.nextLine();
@@ -41,16 +41,16 @@ public class Chauncey {
     private static void removeTask(String command) {
         int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
         String taskDetails = tasks[taskNumber-1].getTaskDetails();
-        for (int i=taskNumber-1; i<numOfTask-1; i++){
+        for (int i=taskNumber-1; i<numOfTask-1; i++) {
             tasks[i] = tasks[i+1];
         }
         numOfTask--;
         System.out.println("removed: " + taskDetails);
     }
 
-    private static void listTasks(){
+    private static void listTasks() {
         System.out.println("Here are the tasks in your list:");
-        for (int i = 1; i<= numOfTask; i++){
+        for (int i = 1; i<= numOfTask; i++) {
             System.out.print(i + ".");
             tasks[i-1].outputTaskDetails();
         }
@@ -80,7 +80,7 @@ public class Chauncey {
         // Enable echos of commands entered by the user
         Scanner in = new Scanner(System.in);
         String command = in.nextLine();
-        while (!command.equals("bye")){
+        while (!command.equals("bye")) {
             printLine();
             executeCommand(command);
             printLine();
@@ -95,7 +95,7 @@ public class Chauncey {
     }
 
     private static void executeCommand(String command) {
-        if (command.equals("list")){
+        if (command.equals("list")) {
             listTasks();
         }
         else if (command.equals("add")) {
@@ -104,10 +104,10 @@ public class Chauncey {
         else if (command.startsWith("remove")) {
             removeTask(command);
         }
-        else if (command.startsWith("mark")){
+        else if (command.startsWith("mark")) {
             markTask(command);
         }
-        else if (command.startsWith("unmark")){
+        else if (command.startsWith("unmark")) {
             unmarkTask(command);
         }
         else{
