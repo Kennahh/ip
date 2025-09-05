@@ -5,10 +5,12 @@ public class Todo extends Task{
         super(description);
     }
 
+    @Override
     public void outputTaskDetails() {
         System.out.println("[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription());
     }
 
+    @Override
     public String getTaskDetails() {
         return "[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription();
     }

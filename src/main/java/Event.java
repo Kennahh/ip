@@ -17,10 +17,12 @@ public class Event extends Task{
         return endTime;
     }
 
+    @Override
     public void outputTaskDetails() {
         System.out.println("[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription() + " (" + startTime + " " + endTime + ")");
     }
 
+    @Override
     public String getTaskDetails() {
         return "[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription() + " (" + startTime + " " + endTime + ")";
     }

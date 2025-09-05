@@ -11,10 +11,12 @@ public class Deadline extends Task{
         return deadline;
     }
 
+    @Override
     public void outputTaskDetails() {
         System.out.println("[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription() + " (" + deadline + ")");
     }
 
+    @Override
     public String getTaskDetails() {
         return "[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription() + " (" + deadline + ")";
     }

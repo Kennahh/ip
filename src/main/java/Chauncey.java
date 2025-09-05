@@ -1,7 +1,8 @@
 import java.util.Scanner;
 
 public class Chauncey {
-    private static Task[] tasks = new Task[100];
+    private static final int MAX_TASKS = 100;
+    private static Task[] tasks = new Task[MAX_TASKS];
     private static int numOfTask = 0;
 
     public static void printLine() {
@@ -39,7 +40,7 @@ public class Chauncey {
     }
 
     private static void removeTask(String command) {
-        int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+        int taskNumber = getTaskNumber(command);
         String taskDetails = tasks[taskNumber-1].getTaskDetails();
         for (int i=taskNumber-1; i<numOfTask-1; i++) {
             tasks[i] = tasks[i+1];
@@ -57,17 +58,24 @@ public class Chauncey {
     }
 
     private static void markTask(String command) {
-        int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+        int taskNumber = getTaskNumber(command);
         tasks[taskNumber-1].markAsDone();
         System.out.println("Nice! I've marked this task as done:");
         tasks[taskNumber-1].outputTaskDetails();
     }
 
     private static void unmarkTask(String command) {
-        int taskNumber = Character.getNumericValue(command.charAt(command.length()-1));
+        int taskNumber = getTaskNumber(command);
         tasks[taskNumber-1].markAsUndone();
         System.out.println("OK, I've marked this task as not done yet:");
         tasks[taskNumber-1].outputTaskDetails();
+    }
+
+    private static int getTaskNumber(String command) {
+        String[] commandDetails = command.split(" ");
+        String numberInString = commandDetails[commandDetails.length - 1];
+        int taskNumber = Integer.parseInt(numberInString);
+        return taskNumber;
     }
 
     public static void main(String[] args) {
@@ -79,7 +87,7 @@ public class Chauncey {
 
         // Enable echos of commands entered by the user
         Scanner in = new Scanner(System.in);
-        String command = in.nextLine();
+        String command = in.nextLine().toLowerCase();
         while (!command.equals("bye")) {
             printLine();
             executeCommand(command);
@@ -95,22 +103,24 @@ public class Chauncey {
     }
 
     private static void executeCommand(String command) {
-        if (command.equals("list")) {
+        String instruction = command.split(" ")[0];
+        switch (instruction) {
+        case "list":
             listTasks();
-        }
-        else if (command.equals("add")) {
+            break;
+        case "add":
             addTask();
-        }
-        else if (command.startsWith("remove")) {
+            break;
+        case "remove":
             removeTask(command);
-        }
-        else if (command.startsWith("mark")) {
+            break;
+        case "mark":
             markTask(command);
-        }
-        else if (command.startsWith("unmark")) {
+            break;
+        case "unmark":
             unmarkTask(command);
-        }
-        else{
+            break;
+        default:
             System.out.println("Invalid command.");
         }
     }
