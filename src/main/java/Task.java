@@ -17,6 +17,10 @@ public class Task {
         this.isDone = false;
     }
 
+    public boolean getStatus() {
+        return isDone;
+    }
+
     public String getStatusIcon() {
         return (isDone ? "X":" ");
     }
