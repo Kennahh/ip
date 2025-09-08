@@ -1,3 +1,5 @@
+package Chauncey.exception;
+
 public class ChaunceyException extends Exception {
     public ChaunceyException() {
         super();
