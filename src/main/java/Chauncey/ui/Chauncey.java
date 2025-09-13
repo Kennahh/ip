@@ -74,6 +74,7 @@ public class Chauncey {
             tasks.remove(taskNumber-1);
             System.out.println("Noted. I've removed this task:");
             System.out.println(taskDetails);
+            System.out.println("Now you have " + tasks.size() + " tasks in the list.");
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
