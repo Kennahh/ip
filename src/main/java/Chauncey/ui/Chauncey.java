@@ -4,6 +4,10 @@ import Chauncey.task.*;
 import Chauncey.exception.ChaunceyException;
 
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Chauncey {
     private static final int MAX_TASKS = 100;
@@ -61,6 +65,7 @@ public class Chauncey {
             System.out.println("Got it. I've added this task: ");
             tasks[numOfTask - 1].outputTaskDetails();
             System.out.println("Now you have " + numOfTask + " tasks in the list.");
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -78,6 +83,7 @@ public class Chauncey {
             }
             numOfTask--;
             System.out.println("removed: " + taskDetails);
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -103,6 +109,7 @@ public class Chauncey {
             tasks[taskNumber - 1].markAsDone();
             System.out.println("Nice! I've marked this task as done:");
             tasks[taskNumber - 1].outputTaskDetails();
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -120,6 +127,7 @@ public class Chauncey {
             tasks[taskNumber - 1].markAsUndone();
             System.out.println("OK, I've marked this task as not done yet:");
             tasks[taskNumber - 1].outputTaskDetails();
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -194,7 +202,71 @@ public class Chauncey {
 
     private static void printWelcomeMessage() {
         System.out.println("Hello! I'm Chauncey.");
+        System.out.println("Loading from previous data...");
+        loadFile();
         System.out.println("List of things I can do: list / add / remove / mark / unmark. If you want to exit, please input \"bye\".");
         System.out.println("What can I do for you?");
+    }
+
+    private static void saveToFile() {
+        try {
+            File directory = new File("./data");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            FileWriter fw = new FileWriter("./data/Chauncey.txt");
+            for (int i=0; i<numOfTask; i++) {
+                fw.write(tasks[i].writeToFile() + "\n");
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void loadFile() {
+        try {
+            File directory = new File("./data");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            File f = new File("./data/Chauncey.txt");
+            Scanner fileReader = new Scanner(f);
+            String line;
+            while (fileReader.hasNext()) {
+                line = fileReader.nextLine();
+                addTaskFromFile(line);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("No previous data found.");
+        } catch (ChaunceyException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void addTaskFromFile(String line) throws ChaunceyException {
+        String[] taskDetails = line.split("|");
+        switch (taskDetails[0].trim()) {
+        case "T":
+            tasks[numOfTask++] = new Todo(taskDetails[2].trim());
+            if (taskDetails[1].trim().equals("1")) {
+                tasks[numOfTask-1].markAsDone();
+            }
+            break;
+        case "D":
+            tasks[numOfTask++] = new Deadline(taskDetails[2].trim(), taskDetails[3].trim());
+            if (taskDetails[1].trim().equals("1")) {
+                tasks[numOfTask-1].markAsDone();
+            }
+            break;
+        case "E":
+            tasks[numOfTask++] = new Event(taskDetails[2].trim(), taskDetails[3].trim(), taskDetails[4].trim());
+            if (taskDetails[1].trim().equals("1")) {
+                tasks[numOfTask-1].markAsDone();
+            }
+            break;
+        default:
+            throw new ChaunceyException("Task type is invalid.");
+        }
     }
 }

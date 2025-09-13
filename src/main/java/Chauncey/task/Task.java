@@ -43,4 +43,8 @@ public class Task {
     public String getTaskDetails() {
         return description;
     }
+
+    public String writeToFile() {
+        return null;
+    }
 }

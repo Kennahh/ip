@@ -22,4 +22,10 @@ public class Deadline extends Task{
     public String getTaskDetails() {
         return "[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription() + " (" + deadline + ")";
     }
+
+    @Override
+    public String writeToFile() {
+        int isDoneInInteger = getStatus()? 1 : 0;
+        return LABEL + " | " + isDoneInInteger + " | " + getDescription() + " | " + deadline;
+    }
 }
