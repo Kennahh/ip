@@ -5,6 +5,10 @@ import Chauncey.exception.ChaunceyException;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Chauncey {
     private static ArrayList<Task> tasks = new ArrayList<>();
@@ -59,6 +63,7 @@ public class Chauncey {
             System.out.println("Got it. I've added this task: ");
             tasks.get(tasks.size()-1).outputTaskDetails();
             System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -75,6 +80,7 @@ public class Chauncey {
             System.out.println("Noted. I've removed this task:");
             System.out.println(taskDetails);
             System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -99,7 +105,9 @@ public class Chauncey {
             }
             tasks.get(taskNumber - 1).markAsDone();
             System.out.println("Nice! I've marked this task as done:");
+
             tasks.get(taskNumber - 1).outputTaskDetails();
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -116,7 +124,9 @@ public class Chauncey {
             }
             tasks.get(taskNumber - 1).markAsUndone();
             System.out.println("OK, I've marked this task as not done yet:");
+
             tasks.get(taskNumber - 1).outputTaskDetails();
+            saveToFile();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -191,7 +201,83 @@ public class Chauncey {
 
     private static void printWelcomeMessage() {
         System.out.println("Hello! I'm Chauncey.");
+        System.out.println("Loading from previous data...");
+        loadFile();
         System.out.println("List of things I can do: list / add / delete / mark / unmark. If you want to exit, please input \"bye\".");
         System.out.println("What can I do for you?");
+    }
+
+    private static void saveToFile() {
+        try {
+            File directory = new File("./data");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            FileWriter fw = new FileWriter("./data/Chauncey.txt");
+            for (int i=0; i<tasks.size(); i++) {
+                fw.write(tasks.get(i).writeToFile() + "\n");
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void loadFile() {
+        try {
+            File directory = new File("./data");
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            File f = new File("./data/Chauncey.txt");
+            Scanner fileReader = new Scanner(f);
+            String line;
+            while (fileReader.hasNext()) {
+                line = fileReader.nextLine();
+                addTaskFromFile(line);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("No previous data found.");
+        } catch (ChaunceyException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void addTaskFromFile(String line) throws ChaunceyException {
+        String[] taskDetails = line.split("\\|");
+        if (taskDetails.length < 3) {
+            throw new ChaunceyException("Corrupted data: insufficient fields in line (at least 3 fields is needed: " + line);
+        }
+        switch (taskDetails[0].trim()) {
+        case "T":
+            if (taskDetails.length != 3) {
+                throw new ChaunceyException("Corrupted data: Exactly 3 fields is needed for todo.");
+            }
+            tasks.add(new Todo(taskDetails[2].trim()));
+            updateTaskStatus(taskDetails[1].trim());
+            break;
+        case "D":
+            if (taskDetails.length != 4) {
+                throw new ChaunceyException("Corrupted data: Exactly 4 fields is needed for deadline.");
+            }
+            tasks.add(new Deadline(taskDetails[2].trim(), taskDetails[3].trim()));
+            updateTaskStatus(taskDetails[1].trim());
+            break;
+        case "E":
+            if (taskDetails.length != 5) {
+                throw new ChaunceyException("Corrupted data: Exactly 5 fields is needed for event.");
+            }
+            tasks.add(new Event(taskDetails[2].trim(), taskDetails[3].trim(), taskDetails[4].trim()));
+            updateTaskStatus(taskDetails[1].trim());
+            break;
+        default:
+            throw new ChaunceyException("Task type is invalid.");
+        }
+    }
+
+    private static void updateTaskStatus(String taskStatus) {
+        if (taskStatus.equals("1")) {
+            tasks.get(tasks.size() - 1).markAsDone();
+        }
     }
 }

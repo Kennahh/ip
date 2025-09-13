@@ -16,4 +16,10 @@ public class Todo extends Task{
     public String getTaskDetails() {
         return "[" + LABEL + "][" + super.getStatusIcon() + "] " + super.getDescription();
     }
+
+    @Override
+    public String writeToFile() {
+        int isDoneInInteger = getStatus()? 1 : 0;
+        return LABEL + " | " + isDoneInInteger + " | " + getDescription();
+    }
 }
