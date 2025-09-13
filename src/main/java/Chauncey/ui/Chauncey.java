@@ -214,8 +214,8 @@ public class Chauncey {
                 directory.mkdirs();
             }
             FileWriter fw = new FileWriter("./data/Chauncey.txt");
-            for (int i=0; i<tasks.size(); i++) {
-                fw.write(tasks.get(i).writeToFile() + "\n");
+            for (Task task: tasks) {
+                fw.write(task.writeToFile() + "\n");
             }
             fw.close();
         } catch (IOException e) {
