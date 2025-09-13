@@ -54,7 +54,7 @@ public class Chauncey {
                 tasks.add(new Event(eventDetails[0].trim(), startTime, endTime));
                 break;
             default:
-                System.out.println("Invalid task type.");
+                throw new ChaunceyException("Invalid task type. Please choose among: todo / deadline / event");
             }
             System.out.println("Got it. I've added this task: ");
             tasks.get(tasks.size()-1).outputTaskDetails();
