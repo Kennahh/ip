@@ -245,28 +245,40 @@ public class Chauncey {
     }
 
     private static void addTaskFromFile(String line) throws ChaunceyException {
-        String[] taskDetails = line.split("|");
+        String[] taskDetails = line.split("\\|");
+        if (taskDetails.length < 3) {
+            throw new ChaunceyException("Corrupted data: insufficient fields in line (at least 3 fields is needed: " + line);
+        }
         switch (taskDetails[0].trim()) {
         case "T":
-            tasks[numOfTask++] = new Todo(taskDetails[2].trim());
-            if (taskDetails[1].trim().equals("1")) {
-                tasks[numOfTask-1].markAsDone();
+            if (taskDetails.length != 3) {
+                throw new ChaunceyException("Corrupted data: Exactly 3 fields is needed for todo.");
             }
+            tasks[numOfTask++] = new Todo(taskDetails[2].trim());
+            updateTaskStatus(taskDetails[1].trim());
             break;
         case "D":
-            tasks[numOfTask++] = new Deadline(taskDetails[2].trim(), taskDetails[3].trim());
-            if (taskDetails[1].trim().equals("1")) {
-                tasks[numOfTask-1].markAsDone();
+            if (taskDetails.length != 4) {
+                throw new ChaunceyException("Corrupted data: Exactly 4 fields is needed for deadline.");
             }
+            tasks[numOfTask++] = new Deadline(taskDetails[2].trim(), taskDetails[3].trim());
+            updateTaskStatus(taskDetails[1].trim());
             break;
         case "E":
-            tasks[numOfTask++] = new Event(taskDetails[2].trim(), taskDetails[3].trim(), taskDetails[4].trim());
-            if (taskDetails[1].trim().equals("1")) {
-                tasks[numOfTask-1].markAsDone();
+            if (taskDetails.length != 5) {
+                throw new ChaunceyException("Corrupted data: Exactly 5 fields is needed for event.");
             }
+            tasks[numOfTask++] = new Event(taskDetails[2].trim(), taskDetails[3].trim(), taskDetails[4].trim());
+            updateTaskStatus(taskDetails[1].trim());
             break;
         default:
             throw new ChaunceyException("Task type is invalid.");
+        }
+    }
+
+    private static void updateTaskStatus(String taskStatus) {
+        if (taskStatus.equals("1")) {
+            tasks[numOfTask - 1].markAsDone();
         }
     }
 }
