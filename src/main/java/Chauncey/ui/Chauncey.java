@@ -4,11 +4,10 @@ import Chauncey.task.*;
 import Chauncey.exception.ChaunceyException;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Chauncey {
-    private static final int MAX_TASKS = 100;
-    private static Task[] tasks = new Task[MAX_TASKS];
-    private static int numOfTask = 0;
+    private static ArrayList<Task> tasks = new ArrayList<>();
 
     public static void printLine() {
         System.out.println("____________________________________________________________");
@@ -29,7 +28,7 @@ public class Chauncey {
             }
             switch (type) {
             case "todo":
-                tasks[numOfTask] = new Todo(task);
+                tasks.add(new Todo(task));
                 break;
             case "deadline":
                 String[] deadlineDetails = task.split("/");
@@ -40,7 +39,7 @@ public class Chauncey {
                     throw new ChaunceyException("Task details more than expected! Please only input task description and task deadline.");
                 }
                 String deadline = deadlineDetails[deadlineDetails.length - 1].trim();
-                tasks[numOfTask] = new Deadline(deadlineDetails[0].trim(), deadline);
+                tasks.add(new Deadline(deadlineDetails[0].trim(), deadline));
                 break;
             case "event":
                 String[] eventDetails = task.split("/");
@@ -52,32 +51,29 @@ public class Chauncey {
                 }
                 String startTime = eventDetails[eventDetails.length - 2].trim();
                 String endTime = eventDetails[eventDetails.length - 1].trim();
-                tasks[numOfTask] = new Event(eventDetails[0].trim(), startTime, endTime);
+                tasks.add(new Event(eventDetails[0].trim(), startTime, endTime));
                 break;
             default:
                 System.out.println("Invalid task type.");
             }
-            numOfTask++;
             System.out.println("Got it. I've added this task: ");
-            tasks[numOfTask - 1].outputTaskDetails();
-            System.out.println("Now you have " + numOfTask + " tasks in the list.");
+            tasks.get(tasks.size()-1).outputTaskDetails();
+            System.out.println("Now you have " + tasks.size() + " tasks in the list.");
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    private static void removeTask(String command) {
+    private static void deleteTask(String command) {
         try {
-            if (numOfTask == 0) {
-                throw new ChaunceyException("There is no task in the list. Can't do remove command.");
+            if (tasks.isEmpty()) {
+                throw new ChaunceyException("There is no task in the list. Can't do delete command.");
             }
             int taskNumber = getTaskNumber(command);
-            String taskDetails = tasks[taskNumber - 1].getTaskDetails();
-            for (int i = taskNumber - 1; i < numOfTask - 1; i++) {
-                tasks[i] = tasks[i + 1];
-            }
-            numOfTask--;
-            System.out.println("removed: " + taskDetails);
+            String taskDetails = tasks.get(taskNumber - 1).getTaskDetails();
+            tasks.remove(taskNumber-1);
+            System.out.println("Noted. I've removed this task:");
+            System.out.println(taskDetails);
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -85,24 +81,24 @@ public class Chauncey {
 
     private static void listTasks() {
         System.out.println("Here are the tasks in your list:");
-        for (int i = 1; i<= numOfTask; i++) {
+        for (int i = 1; i<= tasks.size(); i++) {
             System.out.print(i + ".");
-            tasks[i-1].outputTaskDetails();
+            tasks.get(i-1).outputTaskDetails();
         }
     }
 
     private static void markTask(String command) {
         try {
-            if (numOfTask == 0) {
+            if (tasks.isEmpty()) {
                 throw new ChaunceyException("There is no task in the list. Can't do mark command.");
             }
             int taskNumber = getTaskNumber(command);
-            if (tasks[taskNumber-1].getStatus()) {
+            if (tasks.get(taskNumber-1).getStatus()) {
                 throw new ChaunceyException("Task " + taskNumber + " is already marked done.");
             }
-            tasks[taskNumber - 1].markAsDone();
+            tasks.get(taskNumber - 1).markAsDone();
             System.out.println("Nice! I've marked this task as done:");
-            tasks[taskNumber - 1].outputTaskDetails();
+            tasks.get(taskNumber - 1).outputTaskDetails();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -110,16 +106,16 @@ public class Chauncey {
 
     private static void unmarkTask(String command) {
         try {
-            if (numOfTask == 0) {
+            if (tasks.isEmpty()) {
                 throw new ChaunceyException("There is no task in the list. Can't do unmark command.");
             }
             int taskNumber = getTaskNumber(command);
-            if (!tasks[taskNumber-1].getStatus()) {
+            if (!tasks.get(taskNumber-1).getStatus()) {
                 throw new ChaunceyException("Task " + taskNumber + " is not done! Can't unmark it.");
             }
-            tasks[taskNumber - 1].markAsUndone();
+            tasks.get(taskNumber - 1).markAsUndone();
             System.out.println("OK, I've marked this task as not done yet:");
-            tasks[taskNumber - 1].outputTaskDetails();
+            tasks.get(taskNumber - 1).outputTaskDetails();
         } catch (ChaunceyException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -128,12 +124,12 @@ public class Chauncey {
     private static int getTaskNumber(String command) throws ChaunceyException {
         String[] commandDetails = command.split(" ");
         if (commandDetails.length < 2) {
-            throw new ChaunceyException("I don't know what is the task number for the command. Please also input the task number (formate: <command: remove/mark/unmark> <task number>).");
+            throw new ChaunceyException("I don't know what is the task number for the command. Please also input the task number (formate: <command: delete/mark/unmark> <task number>).");
         }
         String numberInString = commandDetails[commandDetails.length - 1];
         int taskNumber = Integer.parseInt(numberInString);
-        if (taskNumber < 1 || taskNumber > numOfTask) {
-            throw new ChaunceyException("Invalid task number. Task number should be between 1 and " + numOfTask);
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new ChaunceyException("Invalid task number. Task number should be between 1 and " + tasks.size());
         }
         return taskNumber;
     }
@@ -175,8 +171,8 @@ public class Chauncey {
             case "add":
                 addTask();
                 break;
-            case "remove":
-                removeTask(command);
+            case "delete":
+                deleteTask(command);
                 break;
             case "mark":
                 markTask(command);
@@ -194,7 +190,7 @@ public class Chauncey {
 
     private static void printWelcomeMessage() {
         System.out.println("Hello! I'm Chauncey.");
-        System.out.println("List of things I can do: list / add / remove / mark / unmark. If you want to exit, please input \"bye\".");
+        System.out.println("List of things I can do: list / add / delete / mark / unmark. If you want to exit, please input \"bye\".");
         System.out.println("What can I do for you?");
     }
 }
