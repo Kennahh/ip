@@ -160,6 +160,7 @@ public class Chauncey {
             executeCommand(command);
             printLine();
             System.out.println();
+            System.out.println("Next command?");
             command = in.nextLine();
         }
 
