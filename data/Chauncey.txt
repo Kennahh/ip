@@ -1,4 +1,0 @@
-T | 0 | read book
-E | 0 | project meeting | from: Aug 6th 2pm | to: 4pm
-T | 1 | join club
-T | 0 | borrow book
