@@ -18,6 +18,10 @@ Task type in Chauncey:
 2. Deadline (D): tasks with a deadline
 3. Event (E): tasks that need to be done within a time range
 
+To exit the program, type `bye` as command.
+
+Chauncey will also help you to save the task to a text file so that you can access and load it again next time.
+
 ## Explanation of operations in Chauncey
 
 ### List the tasks
